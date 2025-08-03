@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Chinese Flashcard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -29,14 +30,18 @@
       <div id="answer"></div>
     </div>
 
-    <div class="row" id="answer-button-row">
-      <button id="showAnswerBtn">Show Answer</button>
+    <!-- Wrap the answer and navigation buttons -->
+    <div id="bottom-controls-wrapper">
+      <div class="row" id="answer-button-row">
+        <button id="showAnswerBtn">Show Answer</button>
+      </div>
+
+      <div class="row" id="navigation-buttons-row">
+        <button id="backBtn">Back</button>
+        <button id="nextBtn">Next</button>
+      </div>
     </div>
 
-    <div class="row" id="navigation-buttons-row">
-      <button id="backBtn">Back</button>
-      <button id="nextBtn">Next</button>
-    </div>
 
     <!-- loads the config.js file which contains the sheetJsonUrl -->
     <script src="config.js"></script>
@@ -68,11 +73,15 @@
       }
       // Load the shuffled data from localStorage if available 
       const savedData = localStorage.getItem("flashcardData");
-      // Show reset button if there is saved data
+
+      // Check if we have saved data and hide appropriate button
       if (savedData) {
         document.getElementById("resetBtn").style.display = "inline-block";
+        document.getElementById("shuffleBtn").style.display = "none";
+      } else {
+        document.getElementById("resetBtn").style.display = "none";
+        document.getElementById("shuffleBtn").style.display = "inline-block";
       }
-
 
       if (savedData) {
         // Use the shuffled data from settings page
@@ -163,6 +172,16 @@
             console.error(err);
           });
       });
+
+      // Fix 100vh for mobile browsers with dynamic toolbars
+      function updateVh() {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh * 100}px`);
+      }
+
+      // Initial call and on resize
+      updateVh();
+      window.addEventListener('resize', updateVh);
 
 
     </script>

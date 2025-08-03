@@ -1,12 +1,27 @@
 /* General page layout */
+
+/* gets the actual visible screen height */
+:root {
+    --vh: 100vh;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* 🔒 Prevent scrolling */
+}
+
 body {
     font-family: sans-serif;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
+    min-height: calc(var(--vh));
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .row {
@@ -18,27 +33,56 @@ body {
     box-sizing: border-box;
 }
 
-/* Add a gap between 50% width buttons */
+/* 🔘 All button styles in one place */
+button {
+    background-color: #566291;
+    /* Dark grey background */
+    color: white;
+    /* White text */
+    border: none;
+    /* No border */
+    border-radius: 20px;
+    /* Rounded corners */
+    padding: 1.3rem 2rem;
+    /* ⬆️ Unified size */
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-sizing: border-box;
+    width: 100%;
+    /* Default: full width, overridden below if needed */
+    -webkit-tap-highlight-color: transparent;
+    /* Disable tap highlight on mobile */
+}
+
+/* Layout: Shuffle, Settings, Back, Next – half width with gap */
 #top-controls-row button,
 #navigation-buttons-row button {
-    width: 4.8%;
-    /* Slightly less than 50% to allow for gap */
+    width: 48%;
     margin: 1%;
-    /* Adds space between buttons */
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    box-sizing: border-box;
+    /* Adds gap between buttons */
 }
 
+#resetBtn {
+    background-color: #569161
+}
+
+
+
+/* Answer button – full width (default) */
 #answer-button-row button {
-    flex: 1 1 100%;
-    max-width: 100%;
-    margin: 1%;
-    padding: 1.25rem;
-    font-size: 1.1rem;
+    margin: 1% 0%;
 }
 
-/* Ensure other content spans full width */
+/* Group answer and nav buttons together at bottom */
+#bottom-controls-wrapper {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0rem;
+}
+
+/* Question and answer areas */
 #question-row,
 #answer-row,
 #row-info-row {
@@ -48,35 +92,35 @@ body {
 }
 
 #question-row h2 {
-    font-size: 40rem;
+    font-size: 2rem;
     margin: 0;
 }
 
 #answer-row p {
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin: 0.25rem 0;
 }
 
 /* Mobile responsive 
 @media (max-width: 1000px) {
+  button {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+  }
 
-    #top-controls-row button,
-    #navigation-buttons-row button {
-        flex: 1 1 100%;
-        max-width: 100%;
-    }
+  #top-controls-row button,
+  #navigation-buttons-row button {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
 
-    #question-row h2 {
-        font-size: 40rem;
-    }
+  #question-row h2 {
+    font-size: 2.5rem;
+  }
 
-    #answer-row p {
-        font-size: 1.2rem;
-    }
-
-    button {
-        font-size: 0.95rem;
-    }
+  #answer-row p {
+    font-size: 1.2rem;
+  }
 }
 
 */
