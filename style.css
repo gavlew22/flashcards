@@ -101,6 +101,15 @@ button {
     margin: 0.25rem 0;
 }
 
+button:disabled {
+    background-color: #888;
+    /* Lighter grey when disabled */
+    color: #ccc;
+    /* Dimmed text */
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
 /* Mobile responsive 
 @media (max-width: 1000px) {
   button {

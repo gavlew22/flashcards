@@ -21,7 +21,7 @@
 
     <div class="row" id="row-info-row">
       <div id="rowInfo">Loading...</div>
-      <div> &nbsp;&nbsp;&nbsp;&nbsp;Version 12.1 </div>
+      <div> &nbsp;&nbsp;&nbsp;&nbsp;Version 12.2 </div>
     </div>
 
     <div class="row" id="question-row">
@@ -72,7 +72,14 @@
 
         // Set answer visibility
         document.getElementById("answer").style.display = answerVisible ? "block" : "none";
+
+        // Enable/disable Show Answer button
+        document.getElementById("showAnswerBtn").disabled = answerVisible;
+
       }
+
+
+
       // Load the shuffled data from localStorage if available 
       const savedData = localStorage.getItem("flashcardData");
 
@@ -143,7 +150,9 @@
       document.getElementById("showAnswerBtn").addEventListener("click", () => {
         answerVisible = true;
         displayWord();
+        document.getElementById("showAnswerBtn").disabled = true; // Grey out the button
       });
+
 
 
       // Shuffling the cards
