@@ -57,7 +57,7 @@ body {
     margin: 0.25rem 0;
 }
 
-/* Mobile responsive */
+/* Mobile responsive 
 @media (max-width: 1000px) {
 
     #top-controls-row button,
@@ -78,3 +78,5 @@ body {
         font-size: 0.95rem;
     }
 }
+
+*/
