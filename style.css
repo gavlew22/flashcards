@@ -56,7 +56,15 @@ button {
 }
 
 /* Layout: Shuffle, Settings, Back, Next – half width with gap */
-#top-controls-row button,
+#top-controls-row button {
+    width: 31%;
+    margin: 1%;
+    padding: 1.3rem 0;
+    /* Adds gap between buttons */
+}
+
+
+
 #navigation-buttons-row button {
     width: 48%;
     margin: 1%;
@@ -65,6 +73,13 @@ button {
 
 #resetBtn {
     background-color: #569161
+}
+
+/* Hover effect for all buttons */
+.unmute {
+    background-color: #569161;
+    /* Unmute button colour */
+    color: white;
 }
 
 

@@ -11,218 +11,263 @@
 
 <body>
 
-  <body>
-    <div class="row" id="top-controls-row">
-      <button onclick="window.location.href='settings.html'">Settings</button>
-      <button id="shuffleBtn">Shuffle</button>
-      <button id="resetBtn" style="display: none;">Reset Order</button>
 
+  <div class="row" id="top-controls-row">
+    <button onclick="window.location.href='settings.html'">Settings</button>
+    <button id="muteBtn">Mute</button>
+    <button id="shuffleBtn">Shuffle</button>
+    <button id="resetBtn" style="display: none;">Reset Order</button>
+
+  </div>
+
+  <div class="row" id="row-info-row">
+    <div id="rowInfo">Loading...</div>
+    <div> &nbsp;&nbsp;&nbsp;&nbsp;Version 13.5 </div>
+  </div>
+
+  <div class="row" id="question-row">
+    <div id="question"></div>
+  </div>
+
+  <div class="row" id="answer-row">
+    <div id="answer"></div>
+  </div>
+
+  <!-- Wrap the answer and navigation buttons -->
+  <div id="bottom-controls-wrapper">
+    <div class="row" id="answer-button-row">
+      <button id="showAnswerBtn">Show Answer</button>
+      <button id="speakBtn" style="display:none;">🔊 Speak</button>
     </div>
 
-    <div class="row" id="row-info-row">
-      <div id="rowInfo">Loading...</div>
-      <div> &nbsp;&nbsp;&nbsp;&nbsp;Version 12.2 </div>
+    <div class="row" id="navigation-buttons-row">
+      <button id="backBtn">Back</button>
+      <button id="nextBtn">Next</button>
     </div>
-
-    <div class="row" id="question-row">
-      <div id="question"></div>
-    </div>
-
-    <div class="row" id="answer-row">
-      <div id="answer"></div>
-    </div>
-
-    <!-- Wrap the answer and navigation buttons -->
-    <div id="bottom-controls-wrapper">
-      <div class="row" id="answer-button-row">
-        <button id="showAnswerBtn">Show Answer</button>
-      </div>
-
-      <div class="row" id="navigation-buttons-row">
-        <button id="backBtn">Back</button>
-        <button id="nextBtn">Next</button>
-      </div>
-    </div>
+  </div>
 
 
-    <!-- loads the config.js file which contains the sheetJsonUrl -->
-    <script src="config.js"></script>
+  <!-- loads the config.js file which contains the sheetJsonUrl -->
+  <script src="config.js"></script>
 
-    <script>
-      const questionColumns = ["English"];
-      const answerColumns = ["pinyinWithNumbers", "Chinese", "Mnemonic"];
+  <script>
+    const questionColumns = ["English"];
+    const answerColumns = ["pinyinWithNumbers", "Chinese", "Mnemonic"];
 
-      let data = [];
-      let currentIndex = 0;
-      let answerVisible = false;
+    let data = [];
+    let currentIndex = 0;
+    let answerVisible = false;
 
-      function displayWord() {
-        const row = data[currentIndex];
+    function displayWord() {
+      const row = data[currentIndex];
 
-        // Create question text
-        const questionHtml = questionColumns.map(col => `<h2>${row[col]}</h2>`).join("");
-        document.getElementById("question").innerHTML = questionHtml;
+      // Create question text
+      const questionHtml = questionColumns.map(col => `<h2>${row[col]}</h2>`).join("");
+      document.getElementById("question").innerHTML = questionHtml;
 
-        // Create answer text
-        const answerHtml = answerColumns.map(col => `<p>${row[col]}</p>`).join("");
-        document.getElementById("answer").innerHTML = answerHtml;
+      // Create answer text
+      const answerHtml = answerColumns.map(col => `<p>${row[col]}</p>`).join("");
+      document.getElementById("answer").innerHTML = answerHtml;
 
-        // Row indicator
-        document.getElementById("rowInfo").innerText = `${currentIndex + 1} of ${data.length}`;
+      // Row indicator
+      document.getElementById("rowInfo").innerText = `${currentIndex + 1} of ${data.length}`;
 
-        // Set answer visibility
-        document.getElementById("answer").style.display = answerVisible ? "block" : "none";
+      // Set answer visibility
+      document.getElementById("answer").style.display = answerVisible ? "block" : "none";
 
-        // Enable/disable Show Answer button
-        document.getElementById("showAnswerBtn").disabled = answerVisible;
+      // Enable/disable Show Answer button
+      document.getElementById("showAnswerBtn").disabled = answerVisible;
 
-      }
-
-
-
-      // Load the shuffled data from localStorage if available 
-      const savedData = localStorage.getItem("flashcardData");
-
-      // Check if we have saved data and hide appropriate button
-      if (savedData) {
-        document.getElementById("resetBtn").style.display = "inline-block";
-        document.getElementById("shuffleBtn").style.display = "none";
+      // Handle Speak button visibility and functionality
+      const speakBtn = document.getElementById("speakBtn");
+      if (answerVisible) {
+        const chineseWord = data[currentIndex]["Chinese"];
+        speakChinese(chineseWord);
+        speakBtn.style.display = "inline-block";
       } else {
-        document.getElementById("resetBtn").style.display = "none";
-        document.getElementById("shuffleBtn").style.display = "inline-block";
-      }
-
-      if (savedData) {
-        // check if there is saved data in localStorage
-        data = JSON.parse(savedData);
-        displayWord();
-      } else {
-        // Fall back to default order from Google Sheet
-        if (navigator.onLine) {
-          // Try to fetch latest data if online
-          fetch(sheetJsonUrl)
-            .then(response => response.json())
-            .then(json => {
-              data = json;
-              localStorage.setItem("offlineData", JSON.stringify(json)); // Save to local storage
-              displayWord();
-            })
-            .catch(error => {
-              console.error("Fetch error:", error);
-              loadFromLocal(); // Fallback if fetch fails
-            });
-        } else {
-          // Offline mode: load from localStorage
-          loadFromLocal();
-        }
-
-        function loadFromLocal() {
-          const cached = localStorage.getItem("offlineData");
-          if (cached) {
-            data = JSON.parse(cached);
-            displayWord();
-          } else {
-            document.getElementById("question").innerText = "Offline data not available.";
-          }
-        }
-
+        speakBtn.style.display = "none";
       }
 
 
-      document.getElementById("nextBtn").addEventListener("click", () => {
-        currentIndex++;
-        if (currentIndex >= data.length) {
-          currentIndex = 0;
-        }
-        answerVisible = false;
-        displayWord();
-      });
-
-      document.getElementById("backBtn").addEventListener("click", () => {
-        currentIndex--;
-        if (currentIndex < 0) {
-          currentIndex = data.length - 1;
-        }
-        answerVisible = false;
-        displayWord();
-      });
-
-      document.getElementById("showAnswerBtn").addEventListener("click", () => {
-        answerVisible = true;
-        displayWord();
-        document.getElementById("showAnswerBtn").disabled = true; // Grey out the button
-      });
+    }
 
 
 
-      // Shuffling the cards
-      function shuffleArray(array) {
-        return [...array].sort(() => Math.random() - 0.5);
-      }
+    // Load the shuffled data from localStorage if available 
+    const savedData = localStorage.getItem("flashcardData");
 
-      // Shuffle button handler
-      document.getElementById("shuffleBtn").addEventListener("click", () => {
+    // Check if we have saved data and hide appropriate button
+    if (savedData) {
+      document.getElementById("resetBtn").style.display = "inline-block";
+      document.getElementById("shuffleBtn").style.display = "none";
+    } else {
+      document.getElementById("resetBtn").style.display = "none";
+      document.getElementById("shuffleBtn").style.display = "inline-block";
+    }
+
+    if (savedData) {
+      // check if there is saved data in localStorage
+      data = JSON.parse(savedData);
+      displayWord();
+    } else {
+      // Fall back to default order from Google Sheet
+      if (navigator.onLine) {
+        // Try to fetch latest data if online
         fetch(sheetJsonUrl)
-          .then(res => res.json())
-          .then(json => {
-            const shuffled = shuffleArray(json);
-            localStorage.setItem("flashcardData", JSON.stringify(shuffled));
-            data = shuffled;
-            currentIndex = 0;
-            answerVisible = false;
-            displayWord();
-
-            // Hide shuffle, show reset
-            document.getElementById("shuffleBtn").style.display = "none";
-            document.getElementById("resetBtn").style.display = "inline-block";
-          })
-          .catch(err => {
-            console.error(err);
-          });
-      });
-
-
-      // Reset button handler
-      document.getElementById("resetBtn").addEventListener("click", () => {
-        localStorage.removeItem("flashcardData");
-        fetch(sheetJsonUrl)
-          .then(res => res.json())
+          .then(response => response.json())
           .then(json => {
             data = json;
-            currentIndex = 0;
-            answerVisible = false;
+            localStorage.setItem("offlineData", JSON.stringify(json)); // Save to local storage
             displayWord();
-
-            // Hide reset, show shuffle
-            document.getElementById("resetBtn").style.display = "none";
-            document.getElementById("shuffleBtn").style.display = "inline-block";
           })
-          .catch(err => {
-            console.error(err);
+          .catch(error => {
+            console.error("Fetch error:", error);
+            loadFromLocal(); // Fallback if fetch fails
           });
-      });
-
-      // Fix 100vh for mobile browsers with dynamic toolbars
-      function updateVh() {
-        let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh * 100}px`);
+      } else {
+        // Offline mode: load from localStorage
+        loadFromLocal();
       }
 
-      // Initial call and on resize
-      updateVh();
-      window.addEventListener('resize', updateVh);
-
-
-    </script>
-
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(reg => console.log('Service worker registered', reg))
-          .catch(err => console.error('Service worker registration failed', err));
+      function loadFromLocal() {
+        const cached = localStorage.getItem("offlineData");
+        if (cached) {
+          data = JSON.parse(cached);
+          displayWord();
+        } else {
+          document.getElementById("question").innerText = "Offline data not available.";
+        }
       }
-    </script>
 
-  </body>
+    }
+
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      currentIndex++;
+      if (currentIndex >= data.length) {
+        currentIndex = 0;
+      }
+      answerVisible = false;
+      displayWord();
+    });
+
+    document.getElementById("backBtn").addEventListener("click", () => {
+      currentIndex--;
+      if (currentIndex < 0) {
+        currentIndex = data.length - 1;
+      }
+      answerVisible = false;
+      displayWord();
+    });
+
+    document.getElementById("showAnswerBtn").addEventListener("click", () => {
+      answerVisible = true;
+      displayWord();
+      document.getElementById("showAnswerBtn").disabled = true; // Grey out the button
+    });
+
+    // Handle the Speak button
+    document.getElementById("speakBtn").addEventListener("click", () => {
+      const chineseWord = data[currentIndex]["Chinese"];
+      speakChinese(chineseWord);
+    });
+
+    // Shuffling the cards
+    function shuffleArray(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    // Shuffle button handler
+    document.getElementById("shuffleBtn").addEventListener("click", () => {
+      fetch(sheetJsonUrl)
+        .then(res => res.json())
+        .then(json => {
+          const shuffled = shuffleArray(json);
+          localStorage.setItem("flashcardData", JSON.stringify(shuffled));
+          data = shuffled;
+          currentIndex = 0;
+          answerVisible = false;
+          displayWord();
+
+          // Hide shuffle, show reset
+          document.getElementById("shuffleBtn").style.display = "none";
+          document.getElementById("resetBtn").style.display = "inline-block";
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    });
+
+
+    // Reset button handler
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      localStorage.removeItem("flashcardData");
+      fetch(sheetJsonUrl)
+        .then(res => res.json())
+        .then(json => {
+          data = json;
+          currentIndex = 0;
+          answerVisible = false;
+          displayWord();
+
+          // Hide reset, show shuffle
+          document.getElementById("resetBtn").style.display = "none";
+          document.getElementById("shuffleBtn").style.display = "inline-block";
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    });
+
+    // Fix 100vh for mobile browsers with dynamic toolbars
+    function updateVh() {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh * 100}px`);
+    }
+
+    // Initial call and on resize
+    updateVh();
+    window.addEventListener('resize', updateVh);
+
+    // Handle the Speak button
+    function speakChinese(text) {
+      if (isMuted || !text) return; // Respect mute state
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "zh-CN"; // Chinese (Mandarin)
+      window.speechSynthesis.speak(utterance);
+    }
+
+
+
+    // Mute/Unmute button functionality
+    let isMuted = false;
+
+    document.getElementById("muteBtn").addEventListener("click", () => {
+      isMuted = !isMuted;
+
+      const muteBtn = document.getElementById("muteBtn");
+      if (isMuted) {
+        muteBtn.textContent = "Unmute";
+        muteBtn.classList.add("unmute");
+      } else {
+        muteBtn.textContent = "Mute";
+        muteBtn.classList.remove("unmute");
+      }
+    });
+
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('Service worker registered', reg))
+        .catch(err => console.error('Service worker registration failed', err));
+    }
+  </script>
+
+
+
+</body>
 
 </html>
