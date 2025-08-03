@@ -20,6 +20,7 @@
 
     <div class="row" id="row-info-row">
       <div id="rowInfo">Loading...</div>
+      <div> &nbsp;&nbsp;&nbsp;&nbsp;Version 12 </div>
     </div>
 
     <div class="row" id="question-row">
@@ -84,21 +85,39 @@
       }
 
       if (savedData) {
-        // Use the shuffled data from settings page
+        // check if there is saved data in localStorage
         data = JSON.parse(savedData);
         displayWord();
       } else {
         // Fall back to default order from Google Sheet
-        fetch(sheetJsonUrl)
-          .then(response => response.json())
-          .then(json => {
-            data = json;
+        if (navigator.onLine) {
+          // Try to fetch latest data if online
+          fetch(sheetJsonUrl)
+            .then(response => response.json())
+            .then(json => {
+              data = json;
+              localStorage.setItem("offlineData", JSON.stringify(json)); // Save to local storage
+              displayWord();
+            })
+            .catch(error => {
+              console.error("Fetch error:", error);
+              loadFromLocal(); // Fallback if fetch fails
+            });
+        } else {
+          // Offline mode: load from localStorage
+          loadFromLocal();
+        }
+
+        function loadFromLocal() {
+          const cached = localStorage.getItem("offlineData");
+          if (cached) {
+            data = JSON.parse(cached);
             displayWord();
-          })
-          .catch(error => {
-            console.error("Fetch error:", error);
-            document.getElementById("question").innerText = "Error loading word.";
-          });
+          } else {
+            document.getElementById("question").innerText = "Offline data not available.";
+          }
+        }
+
       }
 
 
