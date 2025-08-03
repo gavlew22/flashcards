@@ -21,7 +21,7 @@ body {
 /* Add a gap between 50% width buttons */
 #top-controls-row button,
 #navigation-buttons-row button {
-    width: 48%;
+    width: 4.8%;
     /* Slightly less than 50% to allow for gap */
     margin: 1%;
     /* Adds space between buttons */
